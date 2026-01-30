@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dimkohoncharov/go-dmr"
+	"github.com/dimkohoncharov/go-dmr/bptc"
+	"github.com/dimkohoncharov/go-dmr/lc"
+	"github.com/dimkohoncharov/go-dmr/trellis"
+	"github.com/dimkohoncharov/go-dmr/vbptc"
 	"github.com/op/go-logging"
-	"github.com/pd0mz/go-dmr"
-	"github.com/pd0mz/go-dmr/bptc"
-	"github.com/pd0mz/go-dmr/lc"
-	"github.com/pd0mz/go-dmr/trellis"
-	"github.com/pd0mz/go-dmr/vbptc"
 )
 
 var log = logging.MustGetLogger("dmr/terminal")

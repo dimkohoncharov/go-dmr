@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dimkohoncharov/go-dmr"
 	"github.com/op/go-logging"
-	"github.com/pd0mz/go-dmr"
 )
 
 var log = logging.MustGetLogger("dmr/homebrew")

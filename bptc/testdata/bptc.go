@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pd0mz/go-dmr"
-	"github.com/pd0mz/go-dmr/fec"
+	"github.com/dimkohoncharov/go-dmr"
+	"github.com/dimkohoncharov/go-dmr/fec"
 )
 
 // deinterleave matrix

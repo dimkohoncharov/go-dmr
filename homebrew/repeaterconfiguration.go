@@ -3,7 +3,7 @@ package homebrew
 import (
 	"fmt"
 
-	"github.com/pd0mz/go-dmr"
+	"github.com/dimkohoncharov/go-dmr"
 )
 
 // RepeaterConfiguration holds information about the current repeater. It

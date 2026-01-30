@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/pd0mz/go-dmr"
+	"github.com/dimkohoncharov/go-dmr"
 )
 
 // Peer is a remote repeater that also speaks the Homebrew protocol

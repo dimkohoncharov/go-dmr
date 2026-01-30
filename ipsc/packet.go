@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/pd0mz/go-dmr"
+	"github.com/dimkohoncharov/go-dmr"
 )
 
 const (
