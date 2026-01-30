@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 	"time"
 )
 
@@ -89,9 +90,16 @@ func New(network *Network) (*IPSC, error) {
 	var err error
 
 	if c.Network.AuthKey != "" {
-		if c.authKey, err = hex.DecodeString(c.Network.AuthKey); err != nil {
-			return nil, err
+		s := strings.TrimSpace(strings.Trim(c.Network.AuthKey, `"'`))
+		b, err := hex.DecodeString(s)
+		if err != nil {
+			return nil, fmt.Errorf("invalid IPSC AuthKey hex: %w", err)
 		}
+		// MOTOTRBO IPSC auth key must be exactly 20 bytes (40 hex chars)
+		if len(b) != 20 {
+			return nil, fmt.Errorf("invalid IPSC AuthKey length: got %d bytes, want 20 (40 hex chars)", len(b))
+		}
+		c.authKey = b
 	}
 	if c.Network.AliveTimer == 0 {
 		c.Network.AliveTimer = time.Second * 5
@@ -200,15 +208,22 @@ func (c *IPSC) Run() error {
 }
 
 func (c *IPSC) authenticate(data []byte) bool {
-	if c.authKey == nil || len(c.authKey) == 0 {
+	if len(c.authKey) == 0 {
 		return true
+	}
+
+	if len(data) < 10 {
+		return false
 	}
 
 	payload := c.payload(data)
 	hash := data[len(data)-10:]
+
 	mac := hmac.New(sha1.New, c.authKey)
-	mac.Write(payload)
-	return hmac.Equal(hash, mac.Sum(nil))
+	_, _ = mac.Write(payload)
+
+	sum := mac.Sum(nil) // 20 bytes
+	return hmac.Equal(hash, sum[:10])
 }
 
 func (c *IPSC) parse(peer *net.UDPAddr, data []byte) {
@@ -334,17 +349,20 @@ func (c *IPSC) dump(addr *net.UDPAddr, data []byte) {
 }
 
 func (c *IPSC) hashedPacket(key, data []byte) []byte {
-	if key == nil || len(key) == 0 {
+	if len(key) == 0 {
 		return data
 	}
 
 	mac := hmac.New(sha1.New, key)
-	mac.Write(data)
+	_, _ = mac.Write(data)
 
-	hash := make([]byte, 20)
-	hex.Encode(hash, mac.Sum(nil))
-
-	return append(data, hash...)
+	// HMAC-SHA1 => 20 bytes. MOTOTRBO IPSC authentication commonly appends 10 raw bytes.
+	sum := mac.Sum(nil)
+	hash := sum[:10]
+	out := make([]byte, 0, len(data)+len(hash))
+	out = append(out, data...)
+	out = append(out, hash...)
+	return out
 }
 
 func (c *IPSC) peerMaintenance() {
